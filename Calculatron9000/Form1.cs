@@ -20,16 +20,11 @@ namespace Calculatron9000
         
         private void Form1_Load(object sender, EventArgs e)
         {
-            string expStr1 = "4+3*7+5";
+            string expStr1 = "7 * 5+ 9.36/sqrt 96.5 + 9 /6  / 5* ln5.32 +  4^  1.5 ^1.12 *ln ln96.32";
 
             Expression exp1 = new Expression(expStr1);
 
-            //listBox1.DataSource = exp1.Elements;
-
             MessageBox.Show(exp1.WorkOut().ToString());
-
-            //listBox1.DataSource = exp1.Elements;
-
         }
 
         
