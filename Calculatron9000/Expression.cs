@@ -12,6 +12,7 @@ namespace Calculatron9000
     {
         public List<object> Elements { get; set; }
         public Expression(string expStr) => Elements = Arrange(expStr, Operators);
+        public Expression(List<object> elements) => Elements = elements;
 
         //Break down the string representation of an expression into a List of operators and numbers in order
         List<object> Arrange(string exp, List<Operator> Operators)
@@ -43,14 +44,23 @@ namespace Calculatron9000
         }
         internal double WorkOut()
         {
+            int lhp = Elements.FindIndex(e => (e is Operator) && ((Operator)e).Notation == "(");
+            int rhp = Elements.FindLastIndex(e => (e is Operator) && ((Operator)e).Notation == ")");
+
+            if(lhp != -1 && rhp != -1)
+            {
+                Elements[lhp] = new Expression(Elements.GetRange(lhp + 1, rhp - lhp - 1)).WorkOut();
+                Elements.RemoveRange(lhp + 1, rhp - lhp);
+            }
+            
             //precedence index of the operator with lowest precedence
             int p_max = Operators.Select(o => o.Precedence).Max();
             bool b; //Whether or not the operators with the current precedence are to be searched backwards
             //Seek and do the operations based on their precedence from 0 to p_max
             for (int p = 0; p <= p_max; p++)
             {
-                //Get the search direction of the first operator with current precedence because
-                //operators with the same precedence have the same search direction
+                //Search direction of the first operator with current precedence is all that's needed
+                //because operators with the same precedence have the same search direction
                 b = Operators.Where(e => e.Precedence == p).First().Backwards;
                 //Evaluate all the operations with the current precedence
                 //When the expression runs out of such operations, FindOpIndex() returns -1,
@@ -98,6 +108,10 @@ namespace Calculatron9000
                 Function = func;
                 Calc = null;
             }
+            public Operator(string notation)
+            {
+                Notation = notation;
+            }
             public string Notation { get; }
             public int Precedence { get; }
 
@@ -112,12 +126,14 @@ namespace Calculatron9000
         static readonly List<Operator> Operators = new List<Operator>() {
             new Operator("sqrt", 0, true, o => Sqrt(o[0]), 1),
             new Operator("log", 0, true, o => Log(o[0],10), 1),
-            new Operator("ln", 0, true, o => Log(o[0]),  1),
+            new Operator("ln", 0, true, o => Log(o[0]), 1),
             new Operator("^", 1, true, o => Pow(o[0],o[1]), -1, 1),
             new Operator("*", 2, false, o => o[0] * o[1], -1, 1),
             new Operator("/", 2, false,  o => o[0] / o[1], -1, 1),
             new Operator("+", 3, false,  o => o[0] + o[1], -1, 1),
-            new Operator("-", 3, false,  o => o[0] - o[1], -1, 1)
+            new Operator("-", 3, false,  o => o[0] - o[1], -1, 1),
+            new Operator("("),
+            new Operator(")")
         };
     }
 }
