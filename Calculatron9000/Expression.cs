@@ -33,13 +33,29 @@ namespace Calculatron9000
 
             string[] expParsed = exp.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
+            string error = "";
+
             foreach (string e in expParsed)
             {
                 if (nums.Contains(e))
-                    elements.Add(Convert.ToDouble(e));
+                    try
+                    {
+                        elements.Add(Convert.ToDouble(e));
+                    }
+                    catch
+                    {
+                        error = "Input format is wrong. Following section could not be resolved: \""+ e +"\"";
+                    }
                 else
                     elements.Add(Operators.Find(o => o.Notation == e));
             }
+            
+            if (!ValidParantheses(elements))
+                error += "\nInvalid use of parantheses.";
+            
+
+
+
             return elements;
         }
         internal double WorkOut()
@@ -47,12 +63,12 @@ namespace Calculatron9000
             int lhp = Elements.FindIndex(e => (e is Operator) && ((Operator)e).Notation == "(");
             int rhp = Elements.FindLastIndex(e => (e is Operator) && ((Operator)e).Notation == ")");
 
-            if(lhp != -1 && rhp != -1)
+            if (lhp != -1 && rhp != -1)
             {
                 Elements[lhp] = new Expression(Elements.GetRange(lhp + 1, rhp - lhp - 1)).WorkOut();
                 Elements.RemoveRange(lhp + 1, rhp - lhp);
             }
-            
+
             //precedence index of the operator with lowest precedence
             int p_max = Operators.Select(o => o.Precedence).Max();
             bool b; //Whether or not the operators with the current precedence are to be searched backwards
@@ -68,6 +84,23 @@ namespace Calculatron9000
                 while (Eval(FindOpIndex(p, b))) { }
             }
             return (double)Elements[0];
+        }
+        private bool ValidParantheses(List<object> elements)
+        {
+            int plevel = 0;
+            foreach (var e in elements)
+            {
+                if (e is Operator)
+                {
+                    if (((Operator)e).Notation == "(")
+                        plevel++;
+                    else if (((Operator)e).Notation == ")")
+                        plevel--;
+                    if (plevel < 0)
+                        return false;
+                }
+            }
+            return true;
         }
         private int FindOpIndex(int p, bool backwards)
         {

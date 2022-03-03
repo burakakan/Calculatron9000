@@ -27,6 +27,5 @@ namespace Calculatron9000
             MessageBox.Show(exp1.WorkOut().ToString());
         }
 
-        
     }
 }
