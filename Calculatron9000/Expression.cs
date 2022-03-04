@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static System.Math;
 
@@ -35,26 +37,28 @@ namespace Calculatron9000
 
             string error = "";
 
+            IFormatProvider decimalSeperatorFormatProvider = CultureInfo.InvariantCulture;
+
             foreach (string e in expParsed)
             {
                 if (nums.Contains(e))
                     try
                     {
-                        elements.Add(Convert.ToDouble(e));
+                        elements.Add(Convert.ToDouble(e, decimalSeperatorFormatProvider));
                     }
                     catch
                     {
-                        error = "Input format is wrong. Following section could not be resolved: \""+ e +"\"";
+                        error += "Error: Input format is wrong. Following section could not be resolved: \""+ e +"\"\n";
                     }
                 else
                     elements.Add(Operators.Find(o => o.Notation == e));
             }
             
             if (!ValidParantheses(elements))
-                error += "\nInvalid use of parantheses.";
-            
+                error += "Error: Invalid use of parantheses.\n";
 
-
+            if (error != string.Empty)
+                throw new InvalidExpressionException(error.Trim('\n'));
 
             return elements;
         }
