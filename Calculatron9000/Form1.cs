@@ -34,7 +34,7 @@ namespace Calculatron9000
         private void Form1_Load(object sender, EventArgs e)
         {
             //string expStr1 = "7 * 5+ 9,36/(sqrt 96,5 + 9 /(6  / 5)* ln5,32 +  4^  1,5) ^1,12 *ln ln96,32";
-            txtInput.Text = "7 * 5+ 9.36/(sqrt 96.5 + 9 /(6  / 5)* ln5.32 +  4^  1.5) ^1,12 *ln ln96.32";
+            //txtInput.Text = "7 * 5+ 9.36/(sqrt 96.5 + 9 /(6  / 5)* ln5.32 +  4^  1.5) ^1.12 *ln ln96.32";
         }
 
 
@@ -44,13 +44,13 @@ namespace Calculatron9000
             {
                 Expression exp1 = new Expression(txtInput.Text);
 
-                lblDisp.Visible = false;
+                //lblDisp.Visible = false;
 
                 lblDisp.Text = exp1.WorkOut().ToString();
 
-                lblDisp.Location = new Point(12, this.Size.Width - lblDisp.Size.Width - 29);
+                //lblDisp.Location = new Point(12, this.Size.Width - lblDisp.Size.Width - 29);
                 
-                lblDisp.Visible = true;
+                //lblDisp.Visible = true;
             }
             catch (InvalidExpressionException ie)
             {
